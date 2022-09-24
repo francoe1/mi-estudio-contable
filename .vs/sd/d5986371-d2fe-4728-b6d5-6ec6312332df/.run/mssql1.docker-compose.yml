@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  mssql:
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    hostname: "mssql"
+    restart: always
+    ports: 
+        - 1433:1433
+    environment:
+      - ACCEPT_EULA="Y"
+      - SA_PASSWORD=a7ac6531-d8b8-4e8c-972c-7b9fc09cdd0a

@@ -1,0 +1,12 @@
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\bin\Debug\net6.0\MiEstudio.Shared.deps.json
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\bin\Debug\net6.0\MiEstudio.Shared.dll
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\bin\Debug\net6.0\MiEstudio.Shared.pdb
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.csproj.AssemblyReference.cache
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.GeneratedMSBuildEditorConfig.editorconfig
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.AssemblyInfoInputs.cache
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.AssemblyInfo.cs
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.csproj.CoreCompileInputs.cache
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.dll
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\refint\MiEstudio.Shared.dll
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\MiEstudio.Shared.pdb
+E:\WindowsUser\Documents\Projects .NET\MiEstudio\MiEstudio.Shared\obj\Debug\net6.0\ref\MiEstudio.Shared.dll
