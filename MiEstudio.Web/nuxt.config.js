@@ -17,7 +17,8 @@ export default {
   modules: ['nuxt-buefy', '@nuxtjs/pwa', '@nuxtjs/axios'],
   buildModules: ['@nuxtjs/composition-api/module', '@pinia/nuxt'],
   axios: {
-    baseURL: 'https://localhost:7275/api/',
+    //baseURL: 'https://localhost:7275/api/',
+    baseURL: '/api/',
   },
   pwa: {
     manifest: {

@@ -1,4 +1,5 @@
-﻿using NuGet.Protocol;
+﻿using Newtonsoft.Json;
+using System.Linq;
 using System.Text;
 
 namespace MiEstudio.Server.Reports
@@ -20,8 +21,6 @@ namespace MiEstudio.Server.Reports
 
         public override string ToString() => _content.ToString();
 
-        public string ToJson() => _content.ToJson();
-
-        public byte[] ToBytes() => Encoding.Latin1.GetBytes(ToString());
+        public byte[] ToBytes() => Encoding.UTF8.GetBytes(ToString());
     }
 }

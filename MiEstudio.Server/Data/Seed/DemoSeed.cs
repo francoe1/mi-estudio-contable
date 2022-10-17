@@ -1,6 +1,9 @@
 ﻿using MiEstudio.Server.Data.Contexts;
 using MiEstudio.Server.Data.Models;
 using MiEstudio.Shared.Data.Resources;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MiEstudio.Server.Data.Seed
 {

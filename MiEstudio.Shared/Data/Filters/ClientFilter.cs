@@ -1,4 +1,5 @@
 ﻿using MiEstudio.Shared.Data.Core;
+using System.Collections.Generic;
 
 namespace MiEstudio.Shared.Data.Filters
 {

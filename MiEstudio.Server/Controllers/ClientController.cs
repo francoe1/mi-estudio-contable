@@ -5,7 +5,10 @@ using MiEstudio.Server.Data.Models;
 using MiEstudio.Server.Data.Queries;
 using MiEstudio.Shared.Data.Filters;
 using MiEstudio.Shared.Data.Resources;
+using System;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MiEstudio.Server.Controllers
 {
@@ -120,7 +123,7 @@ namespace MiEstudio.Server.Controllers
             });
         }
 
-        public record ClientStoreInput
+        public struct ClientStoreInput
         {
             public string Name { get; set; }
             public string Address { get; set; }

@@ -4,6 +4,7 @@ using MiEstudio.Server.Data.Models;
 using MiEstudio.Shared.Data.Filters;
 using MiEstudio.Shared.Data.Resources;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace MiEstudio.Server.Data.Queries
 {

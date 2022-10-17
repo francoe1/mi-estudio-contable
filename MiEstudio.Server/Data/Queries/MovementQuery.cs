@@ -4,6 +4,7 @@ using MiEstudio.Server.Data.Models;
 using MiEstudio.Server.Data.Resources;
 using MiEstudio.Shared.Data.Filters;
 using MiEstudio.Shared.Data.Resources;
+using System.Linq;
 
 namespace MiEstudio.Server.Data.Queries
 {

@@ -6,6 +6,9 @@ using MiEstudio.Server.Data.Queries;
 using MiEstudio.Server.Data.Resources;
 using MiEstudio.Shared.Data.Filters;
 using MiEstudio.Shared.Data.Resources;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MiEstudio.Server.Controllers
 {
@@ -33,7 +36,10 @@ namespace MiEstudio.Server.Controllers
             if (input.Value <= decimal.Zero) return BadRequest("Can not negative value");
             if (string.IsNullOrEmpty(input.Concept)) return BadRequest("The concept is required");
 
-            decimal balance = await (from m in _context.Movements where m.ClientId == clientId orderby m.Date descending select m.Balance).FirstOrDefaultAsync();
+            decimal balance = await _context.Movements.Where(m => m.ClientId == clientId)
+                .OrderByDescending(m => m.Date)
+                .Select(m => m.Balance)
+                .FirstOrDefaultAsync();
 
             switch (input.Type)
             {
@@ -64,7 +70,7 @@ namespace MiEstudio.Server.Controllers
             return Ok(movement.ToResource());
         }
 
-        public record MovementStoreInput
+        public class MovementStoreInput
         {
             public DateTime ExpireDate { get; set; } = DateTime.Now.AddDays(30);
             public MovementType Type { get; set; }

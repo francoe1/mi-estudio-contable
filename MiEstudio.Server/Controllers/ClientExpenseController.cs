@@ -3,6 +3,8 @@ using MiEstudio.Server.Data.Contexts;
 using MiEstudio.Server.Data.Extensions;
 using MiEstudio.Server.Data.Models;
 using MiEstudio.Server.Data.Resources;
+using System;
+using System.Threading.Tasks;
 
 namespace MiEstudio.Server.Controllers
 {
@@ -35,7 +37,7 @@ namespace MiEstudio.Server.Controllers
             return Ok(expense.ToResource());
         }
 
-        public record ExpenseStoreInput
+        public struct ExpenseStoreInput
         {
             public decimal Value { get; set; }
         }

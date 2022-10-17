@@ -1,4 +1,5 @@
 ﻿using MiEstudio.Shared.Data.Core;
+using System;
 
 namespace MiEstudio.Server.Data.Core
 {

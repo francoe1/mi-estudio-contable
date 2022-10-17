@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using MiEstudio.Server.Data.Core;
 using MiEstudio.Shared.Data.Core;
 using MiEstudio.Shared.Data.Resources;
+using System;
+using System.Linq;
 using System.Security.Claims;
 
 namespace MiEstudio.Server.Controllers

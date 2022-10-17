@@ -1,4 +1,6 @@
-﻿namespace MiEstudio.Shared.Data.Core
+﻿using System.Collections.Generic;
+
+namespace MiEstudio.Shared.Data.Core
 {
     public partial class ResourceList<T>
     {

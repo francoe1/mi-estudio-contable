@@ -1,14 +1,28 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MiEstudio.Server.Authorization;
 using MiEstudio.Server.Data.Contexts;
 using MiEstudio.Server.Data.Models;
 using MiEstudio.Shared.Data.Resources;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Extensions.FileProviders;
 
 internal class Program
 {
@@ -16,47 +30,49 @@ internal class Program
     {
         SetupDataDirectory();
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        IHostBuilder host = Host.CreateDefaultBuilder();
 
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
-        builder.Services.AddDbContext<DataContext>(option =>
+        host.ConfigureWebHostDefaults(builder =>
         {
-            string connectionString = builder.Configuration["ConnectionStrings:SQLite"];
-            option.UseSqlite(connectionString);
-        });
-
-        builder.Services.AddHttpContextAccessor()
-                           .AddAuthorization()
-                           .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                           .AddJwtBearer(options =>
-                           {
-                               options.TokenValidationParameters = new TokenValidationParameters
-                               {
-                                   ValidateIssuer = true,
-                                   ValidateAudience = true,
-                                   ValidateLifetime = true,
-                                   ValidateIssuerSigningKey = true,
-                                   ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                                   ValidAudience = builder.Configuration["Jwt:Audience"],
-                                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-                               };
-                           });
-
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+            builder.ConfigureServices((context, services) =>
             {
-                Name = "Authorization",
-                Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
+                services.AddControllers();
+                services.AddSwaggerGen();
+                services.AddDbContext<DataContext>(option =>
+                {
+                    string connectionString = context.Configuration["ConnectionStrings:SQLite"];
+                    option.UseSqlite(connectionString);
+                });
 
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                services.AddHttpContextAccessor()
+                                   .AddAuthorization()
+                                   .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                                   .AddJwtBearer(options =>
+                                   {
+                                       options.TokenValidationParameters = new TokenValidationParameters
+                                       {
+                                           ValidateIssuer = true,
+                                           ValidateAudience = true,
+                                           ValidateLifetime = true,
+                                           ValidateIssuerSigningKey = true,
+                                           ValidIssuer = context.Configuration["Jwt:Issuer"],
+                                           ValidAudience = context.Configuration["Jwt:Audience"],
+                                           IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(context.Configuration["Jwt:Key"]))
+                                       };
+                                   });
+
+                services.AddSwaggerGen(options =>
+                {
+                    options.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+                    {
+                        Name = "Authorization",
+                        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer"
+                    });
+
+                    options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -72,74 +88,86 @@ internal class Program
                         new List<string>()
                     }
                 });
-        });
+                });
 
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy(Policies.AppRequireClient,
-                policy => policy.RequireClaim("Type", new[] { UserType.Admin, UserType.User, UserType.Client }.Select(x => x.ToString())));
+                services.AddAuthorization(options =>
+                {
+                    options.AddPolicy(Policies.AppRequireClient,
+                        policy => policy.RequireClaim("Type", new[] { UserType.Admin, UserType.User, UserType.Client }.Select(x => x.ToString())));
 
-            options.AddPolicy(Policies.AppRequireUser,
-                policy => policy.RequireClaim("Type", new[] { UserType.Admin, UserType.User }.Select(x => x.ToString())));
+                    options.AddPolicy(Policies.AppRequireUser,
+                        policy => policy.RequireClaim("Type", new[] { UserType.Admin, UserType.User }.Select(x => x.ToString())));
 
-            options.AddPolicy(Policies.AppRequireAdmin,
-                policy => policy.RequireClaim("Type", UserType.Admin.ToString()));
-        });
+                    options.AddPolicy(Policies.AppRequireAdmin,
+                        policy => policy.RequireClaim("Type", UserType.Admin.ToString()));
+                });
 
-        builder.Services.Configure<JsonOptions>(options =>
-        {
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        });
+                services.Configure<JsonOptions>(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
 
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy(name: "default", policy =>
+                services.AddCors(options =>
+                {
+                    options.AddPolicy(name: "default", policy =>
+                    {
+                        policy.WithOrigins("*")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+                });
+            });
+
+            builder.Configure((context, app) =>
             {
-                policy.WithOrigins("*")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
+                using (IServiceScope scope = app.ApplicationServices.CreateScope())
+                {
+                    DataContext dataContext = scope.ServiceProvider.GetService<DataContext>();
+                    dataContext.Database.Migrate();
+
+                    UserModel admin = dataContext.Users.Where(x => x.User == "admin").FirstOrDefault();
+                    if (admin == null)
+                    {
+                        admin = dataContext.Users.Add(new UserModel
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = "Administrador",
+                            User = "admin",
+                            Password = "1234",
+                            Type = UserType.Admin
+                        }).Entity;
+
+                        dataContext.SaveChanges();
+                    }
+
+                    Console.WriteLine($"Login like admin \n#USER:{admin.User} \n#PASS:{admin.Password}");
+                }
+
+                app.UseSwagger();
+                app.UseSwaggerUI(x => x.EnablePersistAuthorization());
+
+                app.UseCors("default");
+                app.UseRouting();
+                app.UseAuthorization();
+                app.UseAuthentication();
+                app.UseHttpsRedirection();
+
+                app.UseFileServer(new FileServerOptions
+                {
+                    FileProvider = new PhysicalFileProvider(
+                    Path.Combine(AppContext.BaseDirectory, "wwwroot")),
+                    EnableDefaultFiles = true
+                });
+
+                app.UseDefaultFiles();
+                app.UseStaticFiles();
+                app.UseEndpoints(ep => ep.MapControllers());
+                //app.Run();
             });
         });
 
-        WebApplication app = builder.Build();
-
-        using (IServiceScope scope = app.Services.CreateScope())
-        {
-            DataContext context = scope.ServiceProvider.GetService<DataContext>();
-            context.Database.Migrate();
-
-            UserModel admin = context.Users.Where(x => x.User == "admin").FirstOrDefault();
-            if (admin == null)
-            {
-                admin = context.Users.Add(new UserModel
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Administrador",
-                    User = "admin",
-                    Password = "1234",
-                    Type = UserType.Admin
-                }).Entity;
-
-                context.SaveChanges();
-            }
-
-            Console.WriteLine($"Login like admin \n#USER:{admin.User} \n#PASS:{admin.Password}");
-        }
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI(x => x.EnablePersistAuthorization());
-        };
-
-        app.UseCors("default");
-        app.UseRouting();
-        app.UseAuthorization();
-        app.UseAuthentication();
-        app.MapControllers();
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-        app.Run("https://localhost:7275");
+        host.Build().Run();
+        Console.ReadLine();
     }
 
     private static void SetupDataDirectory()

@@ -1,4 +1,6 @@
-﻿namespace MiEstudio.Server.Data.Models
+﻿using System;
+
+namespace MiEstudio.Server.Data.Models
 {
     public class ClientExpenseModel
     {

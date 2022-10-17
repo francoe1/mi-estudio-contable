@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MiEstudio.Server.Data.Contexts;
 using MiEstudio.Server.Data.Models;
 using MiEstudio.Server.Data.Resources;
 using MiEstudio.Shared.Data.Resources;
+using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MiEstudio.Server.Controllers
 {
@@ -84,23 +88,23 @@ namespace MiEstudio.Server.Controllers
             return new LoginOutput
             {
                 User = user,
-                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Token = "123456"//new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
         }
 
-        public record LoginInput
+        public struct LoginInput
         {
             public string UserName { get; set; }
             public string Password { get; set; }
         }
 
-        public record LoginOutput
+        public struct LoginOutput
         {
             public string Token { get; set; }
             public UserResource User { get; set; }
         }
 
-        public record UserStoreInput
+        public struct UserStoreInput
         {
             public string Name { get; set; }
             public string UserName { get; set; }

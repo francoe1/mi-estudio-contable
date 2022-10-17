@@ -1,4 +1,7 @@
-﻿namespace MiEstudio.Shared.Data.Core
+﻿using System;
+using System.Collections.Generic;
+
+namespace MiEstudio.Shared.Data.Core
 {
     public class Paginate : IFilterCollection
     {

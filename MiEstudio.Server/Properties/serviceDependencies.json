@@ -1,8 +1,5 @@
 {
   "dependencies": {
-    "secrets1": {
-      "type": "secrets"
-    },
     "sqlite1": {
       "type": "sqlite",
       "connectionId": "ConnectionStrings:SQLite",
@@ -15,6 +12,10 @@
     "identityapp1": {
       "ignored": "true",
       "type": "identityapp"
+    },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": null
     }
   }
 }

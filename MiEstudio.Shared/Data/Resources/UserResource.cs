@@ -1,4 +1,6 @@
-﻿namespace MiEstudio.Shared.Data.Resources
+﻿using System;
+
+namespace MiEstudio.Shared.Data.Resources
 {
     public class UserResource
     {
